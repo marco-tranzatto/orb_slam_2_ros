@@ -104,6 +104,7 @@ void OrbSlam2Interface::getBodyTransform() {
     return;
   }
 
+  ROS_INFO("==================== use_body_transform_!");
   convertOrbSlamPoseToKindr(T_C_B_opencv, &T_C_B);
   T_B_C_ = T_C_B.inverse();
 

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<launch>
+
+  <param name="/use_sim_time" value="true"/>
+
+
+  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen" >
+    <param name="interface_type" value="stereo" />
+    <param name="vocabulary_file_path" value="/home/marco/RosbagWarehouse/slam_dataset/Vocabulary/ORBvoc.txt" />
+    <param name="settings_file_path" value="$(find orb_slam_2_ros)/cfg/EuRoC.yaml" />
+    <param name="visualization" type="bool" value="true" /> <!-- Disale when running on quadcotper -->
+    <param name="use_body_transform" type="bool" value="false" /> <!-- Body transform isn't available in vanilla ORB_SLAM2 -->
+
+    <param name="frame_id" value="cam0_t0" />
+    <!-- param name="vocabulary_file_path" value="/home/millanea/trunk/datasets/kitti/raw/ORBvoc.txt" /-->
+    <!-- param name="settings_file_path" value="/home/millanea/trunk/datasets/kitti/raw/2011_09_30_drive_18/KITTI00-02_stereo.yaml" /-->
+    <remap from="camera/left/image_raw" to="/cam0/image_raw" />
+    <remap from="camera/right/image_raw" to="/cam1/image_raw" />
+
+  </node>
+
+
+  <!-- Vicon ground truth -->
+  <node pkg="orb_slam_2_ros" type="transform_to_tf" name="transform_to_tf" output="screen">
+    <remap from="transform" to="/vicon/firefly_sbx/firefly_sbx"/>
+  </node>
+
+  <!-- Vicon cam0 ground truth -->
+  <node pkg="orb_slam_2_ros" type="tf_to_transform" name="viconcam0_tf_to_transform" output="screen"/> <!-- from vicon frame to body frame (vicon_uav) w/ bag V1_01_easy.bag -->
+
+  <node pkg="tf" type="static_transform_publisher" name="vicon_cam0_broadcaster"
+     args="0.096208195514129 0.0363258502288234 -0.129972937660946 -0.567983934967044 0.586392603322179 -0.419717809798255 0.396705085077751
+           vicon_uav vicon_cam0 100"/>
+  <!-- === -->
+
+  <!-- Initial transformation to bring cam0 frame in same fixed frame of rviz (world) -->
+  <node pkg="tf" type="static_transform_publisher" name="world_cam0t0_broadcaster"
+     args="0.8666291595494 2.23077934551123 0.927194053181822 -0.643512826994533 0.523255754736477 -0.364420067548795 0.423429652948865
+           world cam0_t0 100"/>
+  <!-- === -->
+
+
+
+</launch>

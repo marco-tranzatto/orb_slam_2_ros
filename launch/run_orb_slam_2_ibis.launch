@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen" >
+    <param name="interface_type" value="stereo" />
+    <param name="vocabulary_file_path" value="/home/marco/RosbagWarehouse/slam_dataset/Vocabulary/ORBvoc.txt" />
+    <!--param name="settings_file_path" value="/home/marco/RosbagWarehouse/slam_dataset/EuRoC/EuRoC.yaml" /-->
+    <param name="settings_file_path" value="$(find orb_slam_2_ros)/cfg/ibis.yaml" />
+    <param name="visualization" type="bool" value="true" /> <!-- Disale when running on quadcotper -->
+    <param name="use_body_transform" type="bool" value="true" /> <!-- Body transform isn't available in vanilla ORB_SLAM2 -->
+
+    <!-- param name="vocabulary_file_path" value="/home/millanea/trunk/datasets/kitti/raw/ORBvoc.txt" /-->
+    <!-- param name="settings_file_path" value="/home/millanea/trunk/datasets/kitti/raw/2011_09_30_drive_18/KITTI00-02_stereo.yaml" /-->
+    <?ignore <remap from="camera/left/image_raw" to="/rect/first/image" />
+	<remap from="camera/right/image_raw" to="/rect/second/image" /> ?>
+    <remap from="camera/left/image_raw" to="/ibis/cam1/image_raw"/> <!-- ATTENTION: Ibis has the two cameras upside dow> cam1 is the left one!  -->
+    <remap from="camera/right/image_raw" to="/ibis/cam0/image_raw" />
+
+
+  </node>
+
+
+  <?ignore <node name="stereo_undistort" pkg="image_undistort" type="stereo_undistort_node">
+    <param name="input_camera_info_from_ros_params" value = "true"/>
+    <param name="first_camera_namespace" value="cam1"/>
+    <param name="second_camera_namespace" value="cam0"/>
+    <param name="scale" value="1.0"/>
+    <param name="process_every_nth_frame" value="1"/>
+    
+    <rosparam file="$(find mav_startup)/parameters/mavs/ibis/camchain_p22031.yaml"/>
+
+    <remap from="raw/first/image" to="/ibis/cam1/image_raw"/> <!-- ATTENTION: Ibis has the two cameras upside dow> cam1 is the left one!  -->
+    <remap from="raw/second/image" to="/ibis/cam0/image_raw"/>
+  </node> ?>
+
+  
+
+</launch>

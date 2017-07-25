@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen" >
+    <param name="interface_type" value="stereo" />
+    <param name="vocabulary_file_path" value="/home/marco/orb_slam_ws/src/ORB_SLAM2/Vocabulary/ORBvoc.txt" />
+    <param name="settings_file_path" value="/home/marco/orb_roswrap_ws/src/orb_slam_2_ros/launch/EuRoC.yaml" />
+    <param name="visualization" type="bool" value="true" /> <!-- Disale when running on quadcotper -->
+    <param name="use_body_transform" type="bool" value="false" /> <!-- Body transform isn't available in vanilla ORB_SLAM2 -->
+
+    <param name="frame_id" value="orb_wolrd" />
+    <param name="child_frame_id" value="orb_camera" />
+
+    <!-- param name="vocabulary_file_path" value="/home/millanea/trunk/datasets/kitti/raw/ORBvoc.txt" /-->
+    <!-- param name="settings_file_path" value="/home/millanea/trunk/datasets/kitti/raw/2011_09_30_drive_18/KITTI00-02_stereo.yaml" /-->
+    <remap from="camera/left/image_raw" to="/cam0/image_raw" />
+	<remap from="camera/right/image_raw" to="/cam1/image_raw" />
+
+  </node>
+
+  <node name="orb_to_rovio_broadcaster" pkg="tf" type="static_transform_publisher"
+    args="-0.0216401454975 -0.064676986768 0.00981073058949 -0.00770717975553208 0.0104993233705952 0.701752800292141 0.712301460668946 world orb_wolrd 10"/>
+
+  <node name="rovio" pkg="rovio" type="rovio_node" output="screen">
+    <param name="filter_config" value="$(find rovio)/cfg/rovio.info"/>
+    <param name="camera0_config" value="$(find rovio)/cfg/euroc_cam0.yaml"/>
+    <param name="camera1_config" value="$(find rovio)/cfg/euroc_cam1.yaml"/>
+  </node>
+
+  
+
+</launch>

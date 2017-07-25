@@ -81,6 +81,12 @@ void OrbSlam2InterfaceStereo::stereoRectification() {
                               right_rectification_map2_);
 
   stereo_rectified_ = true;
+  if (stereo_rectified_) {
+    ROS_WARN("Images are going to be rectified!");
+  } else {
+    ROS_WARN("Images are NOT going to be rectified!");
+  }
+  
 
   return;
 }

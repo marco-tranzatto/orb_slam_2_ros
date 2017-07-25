@@ -19,6 +19,14 @@ cs_add_executable(orb_slam_2_ros_node
   src/orb_slam_2_ros_node.cpp
 )
 
+cs_add_executable(transform_to_tf
+  src/ros_transform_to_tf.cpp
+)
+
+cs_add_executable(tf_to_transform
+  src/ros_tf_to_transform.cpp
+)
+
 target_link_libraries(orb_slam_2_ros_node orb_slam_2_interface ${catkin_LIBRARIES})
 
 cs_install()
