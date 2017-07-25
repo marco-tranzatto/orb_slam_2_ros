@@ -12,6 +12,9 @@
 
 namespace orb_slam_2_interface {
 
+// Default values for parameters
+static const bool kDefaultRectifyInputImages = true;
+
 // The synchronization policy used by the interface to sync stereo images
 typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,
                                                         sensor_msgs::Image>
@@ -32,10 +35,16 @@ class OrbSlam2InterfaceStereo : public OrbSlam2Interface {
   void stereoImageCallback(const sensor_msgs::ImageConstPtr& msg_left,
                            const sensor_msgs::ImageConstPtr& msg_right);
 
+  // Helper functions
+  void getParametersFromRos();
+
   // Subscribers
   std::shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> left_sub_;
   std::shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> right_sub_;
   std::shared_ptr<message_filters::Synchronizer<sync_pol>> sync_;
+
+  // Parameters
+  bool rectify_input_images_;
 };
 
 }  // namespace orb_slam_2_interface

@@ -6,14 +6,15 @@ namespace orb_slam_2_interface {
 
 OrbSlam2InterfaceStereo::OrbSlam2InterfaceStereo(const ros::NodeHandle& nh,
                                              const ros::NodeHandle& nh_private)
-    : OrbSlam2Interface(nh, nh_private) {
+    : OrbSlam2Interface(nh, nh_private),
+      rectify_input_images_(kDefaultRectifyInputImages) {
   // Getting data and params
   subscribeToTopics();
   //advertiseTopics();
-  //getParametersFromRos();
+  getParametersFromRos();
   slam_system_ = std::shared_ptr<ORB_SLAM2::System>(
       new ORB_SLAM2::System(vocabulary_file_path_, settings_file_path_,
-                            ORB_SLAM2::System::STEREO, true));
+                            ORB_SLAM2::System::STEREO, visualization_));
 }
 
 void OrbSlam2InterfaceStereo::subscribeToTopics() {
@@ -33,11 +34,17 @@ void OrbSlam2InterfaceStereo::subscribeToTopics() {
       boost::bind(&OrbSlam2InterfaceStereo::stereoImageCallback, this, _1, _2));
 }
 
+void OrbSlam2InterfaceStereo::getParametersFromRos() {
+  // Optional params
+  nh_private_.getParam("rectify_input_images", rectify_input_images_);
+}
+
 void OrbSlam2InterfaceStereo::stereoImageCallback(
     const sensor_msgs::ImageConstPtr& msg_left,
     const sensor_msgs::ImageConstPtr& msg_right) {
   // Copy the ros image message to cv::Mat.
   cv_bridge::CvImageConstPtr cv_ptr_left;
+  cv::Mat T_C_W_opencv;
   try {
     cv_ptr_left = cv_bridge::toCvShare(msg_left);
   } catch (cv_bridge::Exception& e) {
@@ -51,10 +58,19 @@ void OrbSlam2InterfaceStereo::stereoImageCallback(
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
   }
-  // Handing the image to ORB slam for tracking
-  cv::Mat T_C_W_opencv =
+
+  if (rectify_input_images_) {
+    // TODO (marco-tranzatto)
+    ROS_INFO_ONCE("Input images are going to be rectified using OpenCV.");
+  } else {
+    // Input images are assumed to be already rectified
+    // Handing the image to ORB slam for tracking
+    ROS_INFO_ONCE("Input images are assumed to be already rectified.");
+    T_C_W_opencv =
       slam_system_->TrackStereo(cv_ptr_left->image, cv_ptr_right->image,
                                 cv_ptr_left->header.stamp.toSec());
+  }
+
   // If tracking successfull
   if (!T_C_W_opencv.empty()) {
     // Converting to kindr transform and publishing
