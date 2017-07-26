@@ -37,6 +37,7 @@ class OrbSlam2InterfaceStereo : public OrbSlam2Interface {
 
   // Helper functions
   void getParametersFromRos();
+  void getParametersStereoOpenCV();
 
   // Subscribers
   std::shared_ptr<message_filters::Subscriber<sensor_msgs::Image>> left_sub_;
@@ -45,6 +46,13 @@ class OrbSlam2InterfaceStereo : public OrbSlam2Interface {
 
   // Parameters
   bool rectify_input_images_;
+  bool valid_open_cv_rectify_param_;
+
+  // Stereo rectification maps with OpenCV
+  cv::Mat left_rectification_map1_;
+  cv::Mat left_rectification_map2_;
+  cv::Mat right_rectification_map1_;
+  cv::Mat right_rectification_map2_;
 };
 
 }  // namespace orb_slam_2_interface
