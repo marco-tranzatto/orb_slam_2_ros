@@ -48,19 +48,33 @@ void OrbSlam2InterfaceStereo::getParametersStereoOpenCV() {
   // Adapted from russellaabuchanan 's code.
   cv::FileStorage fsSettings(settings_file_path_, cv::FileStorage::READ);
 
-  cv::Mat K_l, K_r, P_l, P_r, R_l, R_r, D_l, D_r, Q, T_right_left;
+  cv::Mat K_l, K_r, P_l, P_r, R_l, R_r, D_l, D_r, T_right_left;
+  double fx, fy, cx, cy, bf;
+  int rows_l, cols_l, rows_r, cols_r;
+
+  // Left camera
   fsSettings["LEFT.K"] >> K_l;
-  fsSettings["RIGHT.K"] >> K_r;
-
   fsSettings["LEFT.D"] >> D_l;
+  rows_l = fsSettings["LEFT.height"];
+  cols_l = fsSettings["LEFT.width"];
+  fsSettings["LEFT.P"] >> P_l;
+  fsSettings["LEFT.R"] >> R_l;
+  fx = fsSettings["Camera.fx"];
+  fy = fsSettings["Camera.fy"];
+  cx = fsSettings["Camera.cx"];
+  cy = fsSettings["Camera.cy"];
+
+  // Right camera
+  fsSettings["RIGHT.K"] >> K_r;
   fsSettings["RIGHT.D"] >> D_r;
+  rows_r = fsSettings["RIGHT.height"];
+  cols_r = fsSettings["RIGHT.width"];
+  fsSettings["RIGHT.P"] >> P_r;
+  fsSettings["RIGHT.R"] >> R_r;
 
+  // Relative transformation.
   fsSettings["T_RIGHT_LEFT"] >> T_right_left;
-
-  int rows_l = fsSettings["LEFT.height"];
-  int cols_l = fsSettings["LEFT.width"];
-  int rows_r = fsSettings["RIGHT.height"];
-  int cols_r = fsSettings["RIGHT.width"];
+  bf = fsSettings["Camera.bf"];
 
   if (K_l.empty() || K_r.empty() || D_l.empty() || D_r.empty() || rows_l == 0 ||
       rows_r == 0 || cols_l == 0 || cols_r == 0) {
@@ -68,12 +82,35 @@ void OrbSlam2InterfaceStereo::getParametersStereoOpenCV() {
     return;
   }
 
-  fsSettings["LEFT.P"] >> P_l;
-  fsSettings["RIGHT.P"] >> P_r;
+  if (R_l.empty() || R_r.empty()) {
+    if (!T_right_left.empty()) {
+      ROS_WARN("Rectification matrices 'LEFT.R, RIGHT.R' are missing. Calculating them now.");
 
-  fsSettings["LEFT.R"] >> R_l;
-  fsSettings["RIGHT.R"] >> R_r;
+      cv::Mat tmp1, tmp2, tmp3;
+      cv::stereoRectify(K_l, D_l, K_r, D_r, cv::Size(cols_l, rows_l),
+                        T_right_left.rowRange(0, 3).colRange(0, 3),
+                        T_right_left.col(3).rowRange(0, 3), R_l, R_r, tmp1, tmp2, tmp3);
+    } else {
+      ROS_ERROR("Rectification matrices cannot be calculated without providing 'T_RIGHT_LEFT' parameter.");
+      return;
+    }
+  }
 
+  // Comparing output stereoRectify function  and R and P matrices from Euroc dataset,
+  // it looks like the P matrices must be filled in by using
+  // 'camera calibration and distortion parameters' on top of the yaml file. (marco-tranzatto)
+  if (P_l.empty() || P_r.empty()) {
+    ROS_WARN("Projection matrices 'LEFT.P, RIGHT.P' are missing. Filling them now using Camera settings (fx,fy,cx,cy,bf).");
+
+    P_l = (cv::Mat_<double>(3, 4) << fx, 0.0, cx, 0.0, 0.0, fy, cy, 0.0, 0.0, 0.0, 1.0, 0.0);
+    P_r = (cv::Mat_<double>(3, 4) << fx, 0.0, cx, -bf, 0.0, fy, cy, 0.0, 0.0, 0.0, 1.0, 0.0);
+  }
+
+  // TODO The following code is suposed to compute in one single step the matrices
+  // R_l, R_r, P_l, P_r. When checking the results with Euroc dataset, unfortunately the output P_l and P_r
+  // are quite different from the ones in Euroc.yaml file.
+  // For now I just leave this here, but commented. (marco-tranzatto)
+  /*
   if (P_l.empty() || P_r.empty() || R_l.empty() || R_r.empty()) {
     if (!T_right_left.empty()) {
       ROS_WARN("Rectification matrices 'LEFT.P, RIGHT.P, LEFT.R, RIGHT.R' are missing. Calculating them now.");
@@ -85,6 +122,7 @@ void OrbSlam2InterfaceStereo::getParametersStereoOpenCV() {
       return;
     }
   }
+  */
 
   cv::initUndistortRectifyMap(K_l, D_l, R_l, P_l.rowRange(0, 3).colRange(0, 3),
                               cv::Size(cols_l, rows_l), CV_32F,
