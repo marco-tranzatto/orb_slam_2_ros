@@ -16,6 +16,7 @@
 
   <!-- Dependencies. -->
   <depend>roscpp</depend>
+  <depend>rospy</depend>
   <depend>cmake_modules</depend>
   <depend>sensor_msgs</depend>
   <depend>glog_catkin</depend>
@@ -24,5 +25,6 @@
   <depend>pangolin_catkin</depend>
   <depend>minkindr</depend>
   <depend>minkindr_conversions</depend>
+  <depend>image_undistort</depend>
 
 </package>

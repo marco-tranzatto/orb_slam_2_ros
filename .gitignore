@@ -30,3 +30,6 @@
 
 # Project Files
 .clang_complete
+
+# Generated camera parameters
+config/generated_cam_params.yaml
