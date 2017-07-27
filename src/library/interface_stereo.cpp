@@ -4,14 +4,14 @@
 
 namespace orb_slam_2_interface {
 
-OrbSlam2InterfaceStereo::OrbSlam2InterfaceStereo(const ros::NodeHandle& nh,
-                                             const ros::NodeHandle& nh_private)
+OrbSlam2InterfaceStereo::OrbSlam2InterfaceStereo(
+    const ros::NodeHandle& nh, const ros::NodeHandle& nh_private)
     : OrbSlam2Interface(nh, nh_private),
       rectify_input_images_(kDefaultRectifyInputImages),
       valid_open_cv_rectify_param_(false) {
   // Getting data and params
   subscribeToTopics();
-  //advertiseTopics();
+  // advertiseTopics();
   getParametersFromRos();
   slam_system_ = std::shared_ptr<ORB_SLAM2::System>(
       new ORB_SLAM2::System(vocabulary_file_path_, settings_file_path_,
@@ -84,41 +84,57 @@ void OrbSlam2InterfaceStereo::getParametersStereoOpenCV() {
 
   if (R_l.empty() || R_r.empty()) {
     if (!T_right_left.empty()) {
-      ROS_WARN("Rectification matrices 'LEFT.R, RIGHT.R' are missing. Calculating them now.");
+      ROS_WARN(
+          "Rectification matrices 'LEFT.R, RIGHT.R' are missing. Calculating "
+          "them now.");
 
       cv::Mat tmp1, tmp2, tmp3;
       cv::stereoRectify(K_l, D_l, K_r, D_r, cv::Size(cols_l, rows_l),
                         T_right_left.rowRange(0, 3).colRange(0, 3),
-                        T_right_left.col(3).rowRange(0, 3), R_l, R_r, tmp1, tmp2, tmp3);
+                        T_right_left.col(3).rowRange(0, 3), R_l, R_r, tmp1,
+                        tmp2, tmp3);
     } else {
-      ROS_ERROR("Rectification matrices cannot be calculated without providing 'T_RIGHT_LEFT' parameter.");
+      ROS_ERROR(
+          "Rectification matrices cannot be calculated without providing "
+          "'T_RIGHT_LEFT' parameter.");
       return;
     }
   }
 
-  // Comparing output stereoRectify function  and R and P matrices from Euroc dataset,
+  // Comparing output stereoRectify function  and R and P matrices from Euroc
+  // dataset,
   // it looks like the P matrices must be filled in by using
-  // 'camera calibration and distortion parameters' on top of the yaml file. (marco-tranzatto)
+  // 'camera calibration and distortion parameters' on top of the yaml file.
+  // (marco-tranzatto)
   if (P_l.empty() || P_r.empty()) {
-    ROS_WARN("Projection matrices 'LEFT.P, RIGHT.P' are missing. Filling them now using Camera settings (fx,fy,cx,cy,bf).");
+    ROS_WARN(
+        "Projection matrices 'LEFT.P, RIGHT.P' are missing. Filling them now "
+        "using Camera settings (fx,fy,cx,cy,bf).");
 
-    P_l = (cv::Mat_<double>(3, 4) << fx, 0.0, cx, 0.0, 0.0, fy, cy, 0.0, 0.0, 0.0, 1.0, 0.0);
-    P_r = (cv::Mat_<double>(3, 4) << fx, 0.0, cx, -bf, 0.0, fy, cy, 0.0, 0.0, 0.0, 1.0, 0.0);
+    P_l = (cv::Mat_<double>(3, 4) << fx, 0.0, cx, 0.0, 0.0, fy, cy, 0.0, 0.0,
+           0.0, 1.0, 0.0);
+    P_r = (cv::Mat_<double>(3, 4) << fx, 0.0, cx, -bf, 0.0, fy, cy, 0.0, 0.0,
+           0.0, 1.0, 0.0);
   }
 
-  // TODO The following code is suposed to compute in one single step the matrices
-  // R_l, R_r, P_l, P_r. When checking the results with Euroc dataset, unfortunately the output P_l and P_r
+  // TODO The following code is suposed to compute in one single step the
+  // matrices
+  // R_l, R_r, P_l, P_r. When checking the results with Euroc dataset,
+  // unfortunately the output P_l and P_r
   // are quite different from the ones in Euroc.yaml file.
   // For now I just leave this here, but commented. (marco-tranzatto)
   /*
   if (P_l.empty() || P_r.empty() || R_l.empty() || R_r.empty()) {
     if (!T_right_left.empty()) {
-      ROS_WARN("Rectification matrices 'LEFT.P, RIGHT.P, LEFT.R, RIGHT.R' are missing. Calculating them now.");
+      ROS_WARN("Rectification matrices 'LEFT.P, RIGHT.P, LEFT.R, RIGHT.R' are
+  missing. Calculating them now.");
       cv::stereoRectify(K_l, D_l, K_r, D_r, cv::Size(cols_l, rows_l),
                         T_right_left.rowRange(0, 3).colRange(0, 3),
-                        T_right_left.col(3).rowRange(0, 3), R_l, R_r, P_l, P_r, Q);
+                        T_right_left.col(3).rowRange(0, 3), R_l, R_r, P_l, P_r,
+  Q);
     } else {
-      ROS_ERROR("Rectification matrices cannot be calculated without providing 'T_RIGHT_LEFT' parameter.");
+      ROS_ERROR("Rectification matrices cannot be calculated without providing
+  'T_RIGHT_LEFT' parameter.");
       return;
     }
   }
@@ -165,8 +181,8 @@ void OrbSlam2InterfaceStereo::stereoImageCallback(
       cv::remap(cv_ptr_right->image, imRight, right_rectification_map1_,
                 right_rectification_map2_, cv::INTER_LINEAR);
       // Handing the image to ORB slam for tracking
-      T_C_W_opencv = slam_system_->TrackStereo(imLeft, imRight,
-                                               cv_ptr_left->header.stamp.toSec());
+      T_C_W_opencv = slam_system_->TrackStereo(
+          imLeft, imRight, cv_ptr_left->header.stamp.toSec());
     } else {
       ROS_ERROR("Open CV parameters for stereo rectification are missing!");
     }
@@ -175,8 +191,8 @@ void OrbSlam2InterfaceStereo::stereoImageCallback(
     // Handing the image to ORB slam for tracking
     ROS_INFO_ONCE("Input images are assumed to be already rectified.");
     T_C_W_opencv =
-      slam_system_->TrackStereo(cv_ptr_left->image, cv_ptr_right->image,
-                                cv_ptr_left->header.stamp.toSec());
+        slam_system_->TrackStereo(cv_ptr_left->image, cv_ptr_right->image,
+                                  cv_ptr_left->header.stamp.toSec());
   }
 
   // If tracking successfull
@@ -189,7 +205,6 @@ void OrbSlam2InterfaceStereo::stereoImageCallback(
     // Saving the transform to the member for publishing as a TF
     T_W_C_ = T_W_C;
   }
-
 }
 
 }  // namespace orb_slam_2_interface
