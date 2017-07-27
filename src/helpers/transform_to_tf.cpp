@@ -53,7 +53,7 @@ void transformCallback(const geometry_msgs::TransformStamped& msg){
 
 int main(int argc, char **argv) {
 
-  ros::init(argc, argv, "utils_transform_to_tf");
+  ros::init(argc, argv, "transform_to_tf");
   ros::NodeHandle nh;
   ros::NodeHandle nh_private("~");
   // Starting the logging

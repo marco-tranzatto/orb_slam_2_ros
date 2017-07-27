@@ -27,7 +27,7 @@
               world cam0_t0 100"/>
 
   <!-- Vicon ground truth. -->
-  <node name="utils_transform_to_tf" pkg="orb_slam_2_ros" type="utils_transform_to_tf" output="screen">
+  <node name="transform_to_tf" pkg="orb_slam_2_ros" type="transform_to_tf" output="screen">
     <param name="frame_id" value="world"/>
     <param name="child_frame_id" value="vicon_uav"/>
     <remap from="transform" to="/vicon/firefly_sbx/firefly_sbx"/>

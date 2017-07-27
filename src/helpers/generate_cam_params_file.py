@@ -44,7 +44,7 @@ class GenerateCamParamsFile:
 
         # Write params waypoints to file
         script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
-        desired_path = "%s/../config/generated_cam_params.yaml" % script_path
+        desired_path = "%s/../../config/generated_cam_params.yaml" % script_path
         file_obj = open(desired_path, 'w')
 
         file_obj.write("# File generated on " + time.strftime("%Y-%m-%d-%H-%M-%S") + "\n")
@@ -71,7 +71,7 @@ class GenerateCamParamsFile:
         file_obj.close()
 
         rospy.loginfo(rospy.get_name() + 
-            " parameters written in %s/../config/generated_cam_params.yaml" % script_path)
+            " parameters written in %s" % desired_path)
         rospy.signal_shutdown("")
 
 
