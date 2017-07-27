@@ -5,4 +5,4 @@ https://github.com/raulmur/ORB_SLAM2
 
 Depends on my catkinized version of the orb_slam_2 library:
 
-https://github.com/ethz-asl/orb_slam_2_catkin
+https://github.com/marco-tranzatto/ORB_SLAM2
