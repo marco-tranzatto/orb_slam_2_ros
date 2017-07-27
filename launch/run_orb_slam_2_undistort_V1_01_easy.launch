@@ -13,8 +13,7 @@
     <param name="visualization" type="bool" value="true"/>
     <remap from="camera/left/image_raw" to="/rect/first/image"/>
     <remap from="camera/right/image_raw" to="/rect/second/image"/>
-
-	  <param name="rectify_input_images" type="bool" value="false"/>
+    <param name="rectify_input_images" type="bool" value="false"/>
 
     <param name="frame_id" value="cam0_t0"/>
 
