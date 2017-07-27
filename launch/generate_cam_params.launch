@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Stereo image rectification. -->
+  <node name="stereo_undistort" pkg="image_undistort" type="stereo_undistort_node">
+
+    <param name="input_camera_info_from_ros_params" value = "true"/>
+    <param name="first_camera_namespace" value="cam0"/>
+    <param name="second_camera_namespace" value="cam1"/>
+    <param name="scale" value="1.0"/>
+    <param name="process_every_nth_frame" value="1"/>
+    
+    <rosparam file="$(find orb_slam_2_ros)/config/euroc/camchain.yaml"/>
+
+    <remap from="raw/first/image" to="/cam0/image_raw"/>
+    <remap from="raw/second/image" to="/cam1/image_raw"/>
+
+  </node>
+
+  <!-- Camera parameters generation. -->
+  <node name="generate_cam_params_file" pkg="orb_slam_2_ros" type="generate_cam_params_file.py" output="screen">
+
+    <remap from="right_camera/camera_info" to="rect/second/camera_info"/>
+
+  </node>
+
+</launch>
