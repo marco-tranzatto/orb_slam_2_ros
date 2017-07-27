@@ -28,10 +28,8 @@
     <param name="second_camera_namespace" value="cam1"/>
     <param name="scale" value="1.0"/>
     <param name="process_every_nth_frame" value="1"/>
-
-    <!--param name="rename_input_frame" value="true"/-->
     
-    <rosparam file="$(find orb_slam_2_ros)/config/euroc/camchain_1_0.yaml"/>
+    <rosparam file="$(find orb_slam_2_ros)/config/euroc/camchain.yaml"/>
 
     <remap from="raw/first/image" to="/cam0/image_raw"/>
     <remap from="raw/second/image" to="/cam1/image_raw"/>
