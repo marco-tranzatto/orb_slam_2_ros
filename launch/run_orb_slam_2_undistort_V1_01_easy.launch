@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<launch>
+
+  <param name="/use_sim_time" value="true"/>
+
+  <!-- ORB SLAM2 stereo. -->
+  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen">
+
+    <param name="interface_type" value="stereo" />
+
+    <param name="vocabulary_file_path" value="/home/marco/RosbagWarehouse/slam_dataset/Vocabulary/ORBvoc.txt"/>
+    <param name="settings_file_path" value="$(find orb_slam_2_ros)/config/euroc/EuRoC.yaml"/>
+    <param name="visualization" type="bool" value="true"/>
+    <remap from="camera/left/image_raw" to="/rect/first/image"/>
+    <remap from="camera/right/image_raw" to="/rect/second/image"/>
+    <param name="rectify_input_images" type="bool" value="false"/>
+
+    <param name="frame_id" value="cam0_t0"/>
+
+  </node>
+
+  <!-- Stereo image rectification. -->
+  <node name="stereo_undistort" pkg="image_undistort" type="stereo_undistort_node">
+
+    <param name="input_camera_info_from_ros_params" value = "true"/>
+    <param name="first_camera_namespace" value="cam0"/>
+    <param name="second_camera_namespace" value="cam1"/>
+    <param name="scale" value="1.0"/>
+    <param name="process_every_nth_frame" value="1"/>
+    
+    <rosparam file="$(find orb_slam_2_ros)/config/euroc/camchain.yaml"/>
+
+    <remap from="raw/first/image" to="/cam0/image_raw"/>
+    <remap from="raw/second/image" to="/cam1/image_raw"/>
+
+  </node>
+
+  <!-- Vicon initial pose of camera0 at time 0: only for V1_01_easy.bag. -->
+  <node name="world_cam0t0_broadcaster" pkg="tf" type="static_transform_publisher"
+        args="0.8666291595494 2.23077934551123 0.927194053181822
+              -0.643512826994533 0.523255754736477 -0.364420067548795 0.423429652948865
+              world cam0_t0 100"/>
+
+  <!-- Vicon ground truth. -->
+  <node name="utils_transform_to_tf" pkg="orb_slam_2_ros" type="utils_transform_to_tf" output="screen">
+
+    <param name="frame_id" value="world"/>
+    <param name="child_frame_id" value="vicon_uav"/>
+    <remap from="transform" to="/vicon/firefly_sbx/firefly_sbx"/>
+
+  </node>
+
+  <node name="vicon_cam0_broadcaster" pkg="tf" type="static_transform_publisher"
+         args="0.096208195514129 0.0363258502288234 -0.129972937660946
+               -0.567983934967044 0.586392603322179 -0.419717809798255 0.396705085077751
+               vicon_uav vicon_cam0 100"/> <!-- Obtained from Euroc calibration files. -->        
+
+  <node pkg="tf" type="static_transform_publisher" name="vicon_cam0_vicon_cam1_broadcaster" 
+        args="1.100741e-01 -1.566121e-04 8.893828e-04
+              7.045306e-03 -1.798549e-04 1.157330e-03 9.999745e-01
+              vicon_cam0 vicon_cam1 100" /> 
+
+</launch>

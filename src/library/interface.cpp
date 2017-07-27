@@ -14,7 +14,8 @@ OrbSlam2Interface::OrbSlam2Interface(const ros::NodeHandle& nh,
       nh_private_(nh_private),
       verbose_(kDefaultVerbose),
       frame_id_(kDefaultFrameId),
-      child_frame_id_(kDefaultChildFrameId) {
+      child_frame_id_(kDefaultChildFrameId),
+      visualization_(kDefaultVisualization) {
   // Getting data and params
   advertiseTopics();
   getParametersFromRos();
@@ -39,6 +40,7 @@ void OrbSlam2Interface::getParametersFromRos() {
   nh_private_.getParam("verbose", verbose_);
   nh_private_.getParam("frame_id", frame_id_);
   nh_private_.getParam("child_frame_id", child_frame_id_);
+  nh_private_.getParam("visualization", visualization_);
 }
 
 void OrbSlam2Interface::publishCurrentPose(const Transformation& T,
