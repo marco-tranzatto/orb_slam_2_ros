@@ -28,6 +28,9 @@ class OrbSlam2Interface {
   OrbSlam2Interface(const ros::NodeHandle& nh,
                     const ros::NodeHandle& nh_private);
 
+  // Other functions
+  void saveMap(const std::string filename = "last_map.bin");
+
  protected:
   // Subscribes and Advertises to the appropriate ROS topics
   void advertiseTopics();

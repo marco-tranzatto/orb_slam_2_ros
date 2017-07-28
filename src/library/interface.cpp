@@ -12,6 +12,7 @@ OrbSlam2Interface::OrbSlam2Interface(const ros::NodeHandle& nh,
                                      const ros::NodeHandle& nh_private)
     : nh_(nh),
       nh_private_(nh_private),
+      slam_system_(nullptr),
       verbose_(kDefaultVerbose),
       frame_id_(kDefaultFrameId),
       child_frame_id_(kDefaultChildFrameId),
@@ -83,6 +84,13 @@ void OrbSlam2Interface::convertOrbSlamPoseToKindr(const cv::Mat& T_cv,
   Quaternion q_kindr(R);
   Eigen::Vector3d t_kindr(T_eigen_d.block<3, 1>(0, 3));
   *T_kindr = Transformation(q_kindr, t_kindr);
+}
+
+void OrbSlam2Interface::saveMap(const std::string filename) {
+  // TODO (marco-tranzatto) Argument checks on path
+  //CHECK_NOTNULL<std::shared_ptr<ORB_SLAM2::System>>(slam_system_); ??
+
+  slam_system_->SaveMap(filename);
 }
 
 }  // namespace orb_slam_2_interface
