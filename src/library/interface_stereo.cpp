@@ -11,8 +11,7 @@ OrbSlam2InterfaceStereo::OrbSlam2InterfaceStereo(
       valid_open_cv_rectify_param_(false) {
   // Getting data and params
   subscribeToTopics();
-  // advertiseTopics();
-  getParametersFromRos();
+  getStereoParametersFromRos();
   slam_system_ = std::shared_ptr<ORB_SLAM2::System>(
       new ORB_SLAM2::System(vocabulary_file_path_, settings_file_path_,
                             ORB_SLAM2::System::STEREO, visualization_));
@@ -35,7 +34,7 @@ void OrbSlam2InterfaceStereo::subscribeToTopics() {
       boost::bind(&OrbSlam2InterfaceStereo::stereoImageCallback, this, _1, _2));
 }
 
-void OrbSlam2InterfaceStereo::getParametersFromRos() {
+void OrbSlam2InterfaceStereo::getStereoParametersFromRos() {
   // Optional params
   nh_private_.getParam("rectify_input_images", rectify_input_images_);
 
