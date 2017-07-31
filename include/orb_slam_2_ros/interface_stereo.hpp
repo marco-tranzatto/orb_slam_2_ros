@@ -36,7 +36,7 @@ class OrbSlam2InterfaceStereo : public OrbSlam2Interface {
                            const sensor_msgs::ImageConstPtr& msg_right);
 
   // Helper functions
-  void getParametersFromRos();
+  void getStereoParametersFromRos();
   void getParametersStereoOpenCV();
 
   // Subscribers
