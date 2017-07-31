@@ -48,14 +48,6 @@ int main(int argc, char** argv) {
       create_interface(interface_type, nh, nh_private);
   // Spinning
   ros::spin();
-
-  // Testing !!! TODO delete me!
-  // Save Map (under test)
-  interface->saveMap("test_map.bin");
-
-
-  // End Testing !!! TODO delete me!
-
   // Exit tranquilly
   return 0;
 }

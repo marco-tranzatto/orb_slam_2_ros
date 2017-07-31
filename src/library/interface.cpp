@@ -16,9 +16,12 @@ OrbSlam2Interface::OrbSlam2Interface(const ros::NodeHandle& nh,
       verbose_(kDefaultVerbose),
       frame_id_(kDefaultFrameId),
       child_frame_id_(kDefaultChildFrameId),
-      visualization_(kDefaultVisualization) {
+      visualization_(kDefaultVisualization),
+      save_map_file_path_(kSaveMapFilePath),
+      load_map_file_path_(kLoadMapFilePath) {
   // Getting data and params
   advertiseTopics();
+  advertiseServices();
   getParametersFromRos();
 }
 
@@ -29,6 +32,13 @@ void OrbSlam2Interface::advertiseTopics() {
   // Creating a callback timer for TF publisher
   tf_timer_ = nh_.createTimer(ros::Duration(0.01),
                               &OrbSlam2Interface::publishCurrentPoseAsTF, this);
+}
+
+void OrbSlam2Interface::advertiseServices() {
+  save_orb_map_srv_ = nh_private_.advertiseService(
+      "save_orb_map", &OrbSlam2Interface::saveMap, this);
+  load_orb_map_srv_ = nh_private_.advertiseService(
+      "load_orb_map", &OrbSlam2Interface::loadMap, this);
 }
 
 void OrbSlam2Interface::getParametersFromRos() {
@@ -42,6 +52,7 @@ void OrbSlam2Interface::getParametersFromRos() {
   nh_private_.getParam("frame_id", frame_id_);
   nh_private_.getParam("child_frame_id", child_frame_id_);
   nh_private_.getParam("visualization", visualization_);
+  nh_private_.getParam("save_map_file_path", save_map_file_path_);
 }
 
 void OrbSlam2Interface::publishCurrentPose(const Transformation& T,
@@ -86,11 +97,27 @@ void OrbSlam2Interface::convertOrbSlamPoseToKindr(const cv::Mat& T_cv,
   *T_kindr = Transformation(q_kindr, t_kindr);
 }
 
-void OrbSlam2Interface::saveMap(const std::string filename) {
-  // TODO (marco-tranzatto) Argument checks on path
-  //CHECK_NOTNULL<std::shared_ptr<ORB_SLAM2::System>>(slam_system_); ??
+bool OrbSlam2Interface::saveMap(std_srvs::Trigger::Request& request,
+                                std_srvs::Trigger::Response& response) {
+  bool success;
+  std::string message;
 
-  slam_system_->SaveMap(filename);
+  slam_system_->SaveMap(save_map_file_path_, &success, &message);
+  response.success = success;
+  response.message = message;
+
+  return true;
+}
+
+bool OrbSlam2Interface::loadMap(std_srvs::Trigger::Request& request,
+                                std_srvs::Trigger::Response& response) {
+  bool success;
+  std::string message;
+
+  slam_system_->LoadMap(load_map_file_path_, &success, &message);
+  response.success = success;
+  response.message = message;
+  return true;
 }
 
 }  // namespace orb_slam_2_interface

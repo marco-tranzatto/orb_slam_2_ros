@@ -10,6 +10,7 @@
 #include <sensor_msgs/Image.h>
 #include <tf/transform_broadcaster.h>
 #include <Eigen/Geometry>
+#include <std_srvs/Trigger.h>
 
 #include "orb_slam_2_ros/types.hpp"
 
@@ -20,6 +21,8 @@ static const bool kDefaultVerbose = true;
 static const bool kDefaultVisualization = true;
 static const std::string kDefaultFrameId = "world";
 static const std::string kDefaultChildFrameId = "cam0";
+static const std::string kSaveMapFilePath = "map.bin";
+static const std::string kLoadMapFilePath = "map.bin";
 
 // Class handling global alignment calculation and publishing
 class OrbSlam2Interface {
@@ -29,12 +32,16 @@ class OrbSlam2Interface {
                     const ros::NodeHandle& nh_private);
 
   // Other functions
-  void saveMap(const std::string filename = "last_map.bin");
+  bool saveMap(std_srvs::Trigger::Request& request,
+               std_srvs::Trigger::Response& response);
+  bool loadMap(std_srvs::Trigger::Request& request,
+               std_srvs::Trigger::Response& response);
 
  protected:
   // Subscribes and Advertises to the appropriate ROS topics
   void advertiseTopics();
   void getParametersFromRos();
+  void advertiseServices();
 
   // Callbacks
   void imageCallback(const sensor_msgs::ImageConstPtr& msg);
@@ -47,6 +54,10 @@ class OrbSlam2Interface {
   // Helper functions
   void convertOrbSlamPoseToKindr(const cv::Mat& T_cv, Transformation* T_kindr);
 
+  // Services
+  ros::ServiceServer save_orb_map_srv_;
+  ros::ServiceServer load_orb_map_srv_;
+
   // Node handles
   ros::NodeHandle nh_;
   ros::NodeHandle nh_private_;
@@ -55,6 +66,7 @@ class OrbSlam2Interface {
   ros::Publisher T_pub_;
   tf::TransformBroadcaster tf_broadcaster_;
   ros::Timer tf_timer_;
+
 
   // The orb slam system
   std::shared_ptr<ORB_SLAM2::System> slam_system_;
@@ -67,6 +79,8 @@ class OrbSlam2Interface {
   bool visualization_;
   std::string vocabulary_file_path_;
   std::string settings_file_path_;
+  std::string save_map_file_path_;
+  std::string load_map_file_path_;
 
   // Transform frame names
   std::string frame_id_;
