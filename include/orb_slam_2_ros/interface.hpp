@@ -34,8 +34,6 @@ class OrbSlam2Interface {
   // Other functions
   bool saveMap(std_srvs::Trigger::Request& request,
                std_srvs::Trigger::Response& response);
-  bool loadMap(std_srvs::Trigger::Request& request,
-               std_srvs::Trigger::Response& response);
 
  protected:
   // Subscribes and Advertises to the appropriate ROS topics
@@ -56,7 +54,6 @@ class OrbSlam2Interface {
 
   // Services
   ros::ServiceServer save_orb_map_srv_;
-  ros::ServiceServer load_orb_map_srv_;
 
   // Node handles
   ros::NodeHandle nh_;

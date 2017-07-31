@@ -37,8 +37,6 @@ void OrbSlam2Interface::advertiseTopics() {
 void OrbSlam2Interface::advertiseServices() {
   save_orb_map_srv_ = nh_private_.advertiseService(
       "save_orb_map", &OrbSlam2Interface::saveMap, this);
-  load_orb_map_srv_ = nh_private_.advertiseService(
-      "load_orb_map", &OrbSlam2Interface::loadMap, this);
 }
 
 void OrbSlam2Interface::getParametersFromRos() {
@@ -106,17 +104,6 @@ bool OrbSlam2Interface::saveMap(std_srvs::Trigger::Request& request,
   response.success = success;
   response.message = message;
 
-  return true;
-}
-
-bool OrbSlam2Interface::loadMap(std_srvs::Trigger::Request& request,
-                                std_srvs::Trigger::Response& response) {
-  bool success;
-  std::string message;
-
-  slam_system_->LoadMap(load_map_file_path_, &success, &message);
-  response.success = success;
-  response.message = message;
   return true;
 }
 
