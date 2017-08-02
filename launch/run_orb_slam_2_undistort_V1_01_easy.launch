@@ -3,8 +3,13 @@
 
   <param name="/use_sim_time" value="true"/>
 
+  <!-- Settings to save/load a map. -->
+  <arg name="save_map_file_path" default="map.bin"/>
+  <arg name="load_map_file_path" default="map.bin"/>
+  <arg name="load_existing_map" default="true"/>
+
   <!-- ORB SLAM2 stereo. -->
-  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen">
+  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen" launch-prefix="xterm -e gdb --args"> <?ignore launch-prefix="xterm -e gdb --args" ?>
 
     <param name="interface_type" value="stereo" />
 
@@ -16,6 +21,11 @@
     <param name="rectify_input_images" type="bool" value="false"/>
 
     <param name="frame_id" value="cam0_t0"/>
+
+    <!-- Settings to save/load a map. -->
+    <param name="save_map_file_path" value="$(arg save_map_file_path)"/>
+    <param name="load_map_file_path" value="$(arg load_map_file_path)"/>
+    <param name="load_existing_map" value="$(arg load_existing_map)"/>
 
   </node>
 

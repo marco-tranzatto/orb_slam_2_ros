@@ -23,6 +23,7 @@ static const std::string kDefaultFrameId = "world";
 static const std::string kDefaultChildFrameId = "cam0";
 static const std::string kSaveMapFilePath = "map.bin";
 static const std::string kLoadMapFilePath = "map.bin";
+static const bool loadExistingMap = false;
 
 // Class handling global alignment calculation and publishing
 class OrbSlam2Interface {
@@ -78,6 +79,7 @@ class OrbSlam2Interface {
   std::string settings_file_path_;
   std::string save_map_file_path_;
   std::string load_map_file_path_;
+  bool load_existing_map_;
 
   // Transform frame names
   std::string frame_id_;

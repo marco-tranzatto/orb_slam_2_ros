@@ -18,7 +18,8 @@ OrbSlam2Interface::OrbSlam2Interface(const ros::NodeHandle& nh,
       child_frame_id_(kDefaultChildFrameId),
       visualization_(kDefaultVisualization),
       save_map_file_path_(kSaveMapFilePath),
-      load_map_file_path_(kLoadMapFilePath) {
+      load_map_file_path_(kLoadMapFilePath),
+      load_existing_map_(loadExistingMap) {
   // Getting data and params
   advertiseTopics();
   advertiseServices();
@@ -51,6 +52,8 @@ void OrbSlam2Interface::getParametersFromRos() {
   nh_private_.getParam("child_frame_id", child_frame_id_);
   nh_private_.getParam("visualization", visualization_);
   nh_private_.getParam("save_map_file_path", save_map_file_path_);
+  nh_private_.getParam("load_map_file_path", load_map_file_path_);
+  nh_private_.getParam("load_existing_map", load_existing_map_);
 }
 
 void OrbSlam2Interface::publishCurrentPose(const Transformation& T,
@@ -99,6 +102,11 @@ bool OrbSlam2Interface::saveMap(std_srvs::Trigger::Request& request,
                                 std_srvs::Trigger::Response& response) {
   bool success;
   std::string message;
+
+  // TODO delete me, I'm used to testing save/load map
+  ROS_WARN("Sendig command 'Shutdown' to SLAM!");
+  slam_system_->Shutdown();
+  // END TODO delete me, I'm used to testing save/load map
 
   slam_system_->SaveMap(save_map_file_path_, &success, &message);
   response.success = success;
