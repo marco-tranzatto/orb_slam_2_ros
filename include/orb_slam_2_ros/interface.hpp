@@ -21,9 +21,9 @@ static const bool kDefaultVerbose = true;
 static const bool kDefaultVisualization = true;
 static const std::string kDefaultFrameId = "world";
 static const std::string kDefaultChildFrameId = "cam0";
-static const std::string kSaveMapFilePath = "map.bin";
-static const std::string kLoadMapFilePath = "map.bin";
-static const bool loadExistingMap = false;
+static const std::string kDefaultSaveMapFilePath = "map.bin";
+static const std::string kDefaultLoadMapFilePath = "map.bin";
+static const bool kDefaultLoadExistingMap = false;
 
 // Class handling global alignment calculation and publishing
 class OrbSlam2Interface {

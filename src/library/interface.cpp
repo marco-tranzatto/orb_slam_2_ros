@@ -17,9 +17,9 @@ OrbSlam2Interface::OrbSlam2Interface(const ros::NodeHandle& nh,
       frame_id_(kDefaultFrameId),
       child_frame_id_(kDefaultChildFrameId),
       visualization_(kDefaultVisualization),
-      save_map_file_path_(kSaveMapFilePath),
-      load_map_file_path_(kLoadMapFilePath),
-      load_existing_map_(loadExistingMap) {
+      save_map_file_path_(kDefaultSaveMapFilePath),
+      load_map_file_path_(kDefaultLoadMapFilePath),
+      load_existing_map_(kDefaultLoadExistingMap) {
   // Getting data and params
   advertiseTopics();
   advertiseServices();
