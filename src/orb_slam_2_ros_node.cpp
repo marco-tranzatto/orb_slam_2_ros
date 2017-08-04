@@ -50,13 +50,6 @@ int main(int argc, char** argv) {
       create_interface(interface_type, nh, nh_private);
   // Spinning
   ros::spin();
-
-  // TODO delete me, I'm used to testing save/load map
-  std_srvs::Trigger::Request request;
-  std_srvs::Trigger::Response response;
-  interface->saveMap(request, response);
-  // END TODO delete me, I'm used to testing save/load map
-
   // Exit tranquilly
   return 0;
 }

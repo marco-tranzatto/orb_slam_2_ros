@@ -7,9 +7,10 @@
   <arg name="save_map_file_path" default="map.bin"/>
   <arg name="load_map_file_path" default="map.bin"/>
   <arg name="load_existing_map" default="true"/>
+  <arg name="localization_mode" default="$(arg load_existing_map)"/>
 
   <!-- ORB SLAM2 stereo. -->
-  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen" launch-prefix="xterm -e gdb --args"> <?ignore launch-prefix="xterm -e gdb --args" ?>
+  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen"> <?ignore launch-prefix="xterm -e gdb --args" ?>
 
     <param name="interface_type" value="stereo" />
 
@@ -26,6 +27,7 @@
     <param name="save_map_file_path" value="$(arg save_map_file_path)"/>
     <param name="load_map_file_path" value="$(arg load_map_file_path)"/>
     <param name="load_existing_map" value="$(arg load_existing_map)"/>
+    <param name="localization_mode" value="$(arg localization_mode)"/>
 
   </node>
 

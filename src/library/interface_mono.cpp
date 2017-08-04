@@ -15,7 +15,8 @@ OrbSlam2InterfaceMono::OrbSlam2InterfaceMono(const ros::NodeHandle& nh,
   slam_system_ = std::shared_ptr<ORB_SLAM2::System>(
       new ORB_SLAM2::System(vocabulary_file_path_, settings_file_path_,
                             ORB_SLAM2::System::MONOCULAR, visualization_,
-                            load_existing_map_, load_map_file_path_));
+                            load_existing_map_, load_map_file_path_,
+                            localization_mode_));
 }
 
 void OrbSlam2InterfaceMono::subscribeToTopics() {

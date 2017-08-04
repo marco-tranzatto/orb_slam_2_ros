@@ -19,7 +19,8 @@ OrbSlam2Interface::OrbSlam2Interface(const ros::NodeHandle& nh,
       visualization_(kDefaultVisualization),
       save_map_file_path_(kDefaultSaveMapFilePath),
       load_map_file_path_(kDefaultLoadMapFilePath),
-      load_existing_map_(kDefaultLoadExistingMap) {
+      load_existing_map_(kDefaultLoadExistingMap),
+      localization_mode_(kDefaultLocalizationMode) {
   // Getting data and params
   advertiseTopics();
   advertiseServices();
@@ -54,6 +55,12 @@ void OrbSlam2Interface::getParametersFromRos() {
   nh_private_.getParam("save_map_file_path", save_map_file_path_);
   nh_private_.getParam("load_map_file_path", load_map_file_path_);
   nh_private_.getParam("load_existing_map", load_existing_map_);
+  nh_private_.getParam("localization_mode", localization_mode_);
+
+  // Params check
+  if (localization_mode_ && !load_existing_map_) {
+    ROS_WARN("Localization mode only is enabled (no mapping) but no existing map is being loaded.");
+  }
 }
 
 void OrbSlam2Interface::publishCurrentPose(const Transformation& T,
