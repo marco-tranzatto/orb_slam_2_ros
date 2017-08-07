@@ -10,7 +10,7 @@
   <arg name="localization_mode" default="$(arg load_existing_map)"/>
 
   <!-- ORB SLAM2 stereo. -->
-  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen"> <?ignore launch-prefix="xterm -e gdb --args" ?>
+  <node pkg="orb_slam_2_ros" name="orb_slam_2_ros_node" type="orb_slam_2_ros_node" output="screen">
 
     <param name="interface_type" value="stereo" />
 

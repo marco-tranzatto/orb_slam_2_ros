@@ -8,8 +8,6 @@
 #include "orb_slam_2_ros/interface_mono.hpp"
 #include "orb_slam_2_ros/interface_stereo.hpp"
 
-#include <std_srvs/Trigger.h> // TODO delete me, I'm used to testing save/load map
-
 // A factory method for creating an interface
 std::unique_ptr<orb_slam_2_interface::OrbSlam2Interface> create_interface(
     std::string interface_type, const ros::NodeHandle& nh,

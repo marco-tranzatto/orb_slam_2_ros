@@ -110,11 +110,6 @@ bool OrbSlam2Interface::saveMap(std_srvs::Trigger::Request& request,
   bool success;
   std::string message;
 
-  // TODO delete me, I'm used to testing save/load map
-  ROS_WARN("Sendig command 'Shutdown' to SLAM!");
-  slam_system_->Shutdown();
-  // END TODO delete me, I'm used to testing save/load map
-
   slam_system_->SaveMap(save_map_file_path_, &success, &message);
   response.success = success;
   response.message = message;
